@@ -19,11 +19,32 @@ variable "aws_profile" {
   type = string
 }
 
-variable "aws_vpc_name" {
-  type = string
+variable "projectname" {
+  type    = string
+  default = "apollo"
 }
 
 variable "aws_vpc_cidr" {
   type    = string
   default = "10.0.0.0/16"
+}
+
+variable "aws_vpc_public_subnet_1a" {
+  type    = string
+  default = "10.0.0.0/24"
+}
+
+variable "aws_vpc_public_subnet_1b" {
+  type    = string
+  default = "10.0.1.0/24"
+}
+
+variable "aws_vpc_private_subnet_1a" {
+  type    = string
+  default = "10.0.2.0/24"
+}
+
+variable "aws_vpc_private_subnet_1b" {
+  type    = string
+  default = "10.0.3.0/24"
 }
