@@ -52,7 +52,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-resource "aws_route_table" "public_rt" {
+resource "aws_route_table" "public_rtb" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -60,7 +60,7 @@ resource "aws_route_table" "public_rt" {
   }
 }
 
-resource "aws_route_table" "private_rt" {
+resource "aws_route_table" "private_rtb" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -70,35 +70,35 @@ resource "aws_route_table" "private_rt" {
 
 resource "aws_route_table_association" "public_1a" {
   subnet_id = aws_subnet.public_subnet_1a.id
-  route_table_id = aws_route_table.public_rt.id
+  route_table_id = aws_route_table.public_rtb.id
 }
 
 resource "aws_route_table_association" "public_1b" {
   subnet_id = aws_subnet.public_subnet_1b.id
-  route_table_id = aws_route_table.public_rt.id
+  route_table_id = aws_route_table.public_rtb.id
 }
 
 
 resource "aws_route_table_association" "private_1a" {
   subnet_id = aws_subnet.private_subnet_1a.id
-  route_table_id = aws_route_table.private_rt.id
+  route_table_id = aws_route_table.private_rtb.id
 }
 
 resource "aws_route_table_association" "private_1b" {
   subnet_id = aws_subnet.private_subnet_1b.id
-  route_table_id = aws_route_table.private_rt.id
+  route_table_id = aws_route_table.private_rtb.id
 }
 
-resource "aws_route" "public-rt" {
-  route_table_id = aws_route_table.public_rt.id
+resource "aws_route" "public_rt" {
+  route_table_id = aws_route_table.public_rtb.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id = aws_internet_gateway.igw.id
 }
 
-resource "aws_route" "private-rt" {
-  route_table_id = aws_route_table.private_rt.id
+resource "aws_route" "private_rt" {
+  route_table_id = aws_route_table.private_rtb.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = aws_nat_gateway.natgw_1.id
+  nat_gateway_id = aws_nat_gateway.natgw_1.id
 }
 
 
@@ -123,3 +123,24 @@ resource "aws_eip" "natgw_eip_1" {
   }
 }
 
+resource "aws_instance" "bastion" {
+  ami = var.aws_vpc_bastion_host_ami_id
+  subnet_id = aws_subnet.public_subnet_1a.id
+  instance_type = "t2.nano"
+  key_name = var.aws_vpc_bastion_host_key_name
+  associate_public_ip_address = true
+
+  tags = {
+    "Name" = "${var.projectname}-bastion-host"
+  }
+}
+
+
+resource "aws_security_group" "bastion_sg" {
+  vpc_id = aws_vpc.vpc.id
+}
+
+resource "aws_network_interface_sg_attachment" "bastion" {
+  security_group_id    = aws_security_group.bastion_sg.id
+  network_interface_id = aws_instance.bastion.primary_network_interface_id
+}
