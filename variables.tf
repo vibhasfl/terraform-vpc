@@ -48,3 +48,19 @@ variable "aws_vpc_private_subnet_1b" {
   type    = string
   default = "10.0.3.0/24"
 }
+
+variable "aws_vpc_bastion_host_ami_id" {
+  type    = string
+  default = "ami-04b1ddd35fd71475a"
+}
+
+variable "aws_vpc_bastion_host_key_name" {
+  type    = string
+  default = "terraform"
+}
+
+variable "aws_vpc_bastion_host_allowed_ips" {
+  type    = list
+  default = ["116.73.130.190/32"]
+}
+

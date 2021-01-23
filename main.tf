@@ -123,12 +123,15 @@ resource "aws_eip" "natgw_eip_1" {
   }
 }
 
+# Adding bastion host in public subnet
+
 resource "aws_instance" "bastion" {
   ami = var.aws_vpc_bastion_host_ami_id
   subnet_id = aws_subnet.public_subnet_1a.id
   instance_type = "t2.nano"
   key_name = var.aws_vpc_bastion_host_key_name
   associate_public_ip_address = true
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
   tags = {
     "Name" = "${var.projectname}-bastion-host"
@@ -138,9 +141,30 @@ resource "aws_instance" "bastion" {
 
 resource "aws_security_group" "bastion_sg" {
   vpc_id = aws_vpc.vpc.id
+
+  ingress {
+    description = "Allow SSH access from home"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.aws_vpc_bastion_host_allowed_ips
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  tags = {
+    "Name" = "${var.projectname}-bastion-host-sg"
+  }
+
 }
 
-resource "aws_network_interface_sg_attachment" "bastion" {
-  security_group_id    = aws_security_group.bastion_sg.id
-  network_interface_id = aws_instance.bastion.primary_network_interface_id
-}
+# resource "aws_network_interface_sg_attachment" "bastion" {
+#   security_group_id    = aws_security_group.bastion_sg.id
+#   network_interface_id = aws_instance.bastion.primary_network_interface_id
+# }
