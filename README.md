@@ -21,7 +21,7 @@
 ```
 > terraform apply
 ```
-4. Destroy infrag
+4. Destroy infra
 ```
 > terraform destroy
 ```
