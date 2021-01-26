@@ -21,13 +21,13 @@
 ```
 > terraform apply
 ```
-4. Destroy infra
+4. Destroy infrag
 ```
 > terraform destroy
 ```
 
 
-Diagram :
+## Diagram :
 ![VPC](https://github.com/vibhasfl/terraform-vpc/blob/main/VPC.jpg)
 
 
