@@ -1,7 +1,5 @@
 provider "aws" {
   region                  = var.aws_region
-  shared_credentials_file = var.shared_credentials_path
-  profile                 = var.aws_profile
 }
 
 resource "aws_vpc" "vpc" {
@@ -117,7 +115,6 @@ resource "aws_nat_gateway" "natgw_1" {
 
 resource "aws_eip" "natgw_eip_1" {
   depends_on = [aws_internet_gateway.igw]
-  vpc = true
   tags = {
     "Name" = "${var.projectname}-natgw-eip-1"
   }
@@ -128,7 +125,7 @@ resource "aws_eip" "natgw_eip_1" {
 resource "aws_instance" "bastion" {
   ami = var.aws_vpc_bastion_host_ami_id
   subnet_id = aws_subnet.public_subnet_1a.id
-  instance_type = "t2.nano"
+  instance_type = "t2.medium"
   key_name = var.aws_vpc_bastion_host_key_name
   associate_public_ip_address = true
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
